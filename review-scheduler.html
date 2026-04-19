@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>復習スケジューラー</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff;
+      --bg2: #f5f5f3;
+      --bg3: #eeece7;
+      --text: #1a1a1a;
+      --text2: #666660;
+      --text3: #999990;
+      --border: rgba(0,0,0,0.12);
+      --border2: rgba(0,0,0,0.22);
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1a1a;
+        --bg2: #242424;
+        --bg3: #2e2e2e;
+        --text: #f0f0ee;
+        --text2: #aaaaaa;
+        --text3: #666666;
+        --border: rgba(255,255,255,0.12);
+        --border2: rgba(255,255,255,0.22);
+      }
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      background: var(--bg3);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    .container { max-width: 640px; margin: 0 auto; }
+    h1 { font-size: 20px; font-weight: 500; margin-bottom: 1.25rem; }
+    .tabs { display: flex; gap: 4px; margin-bottom: 1.25rem; background: var(--bg2); padding: 4px; border-radius: var(--radius-lg); }
+    .tab { flex: 1; padding: 8px; font-size: 14px; cursor: pointer; border: none; background: none; color: var(--text2); border-radius: var(--radius-md); font-family: inherit; transition: background 0.15s; }
+    .tab.active { background: var(--bg); color: var(--text); font-weight: 500; }
+    .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    label { font-size: 13px; color: var(--text2); }
+    input[type="text"], input[type="date"], input[type="number"], textarea, select {
+      font-size: 14px; font-family: inherit; padding: 8px 10px;
+      border: 0.5px solid var(--border2); border-radius: var(--radius-md);
+      background: var(--bg); color: var(--text); outline: none;
+    }
+    input:focus, textarea:focus { box-shadow: 0 0 0 2px rgba(0,0,0,0.15); }
+    textarea { min-height: 64px; resize: vertical; }
+    .btn-primary {
+      background: var(--text); color: var(--bg); border: none;
+      padding: 9px 20px; border-radius: var(--radius-md);
+      font-size: 14px; cursor: pointer; font-family: inherit; width: 100%;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-ghost {
+      background: none; border: 0.5px solid var(--border2);
+      padding: 6px 12px; border-radius: var(--radius-md);
+      font-size: 13px; cursor: pointer; color: var(--text); font-family: inherit;
+    }
+    .btn-ghost:hover { background: var(--bg2); }
+    .btn-danger { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 13px; padding: 4px 8px; border-radius: var(--radius-md); font-family: inherit; }
+    .btn-danger:hover { color: #E24B4A; background: #FCEBEB; }
+    .interval-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .interval-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 13px; border: 0.5px solid var(--border2); background: var(--bg2); color: var(--text); }
+    .remove-chip { background: none; border: none; cursor: pointer; color: var(--text2); font-size: 16px; line-height: 1; padding: 0; }
+    .add-interval { display: flex; align-items: center; gap: 8px; }
+    .add-interval input { width: 80px; }
+    .day-section { margin-bottom: 1.25rem; }
+    .day-header { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 8px; padding-bottom: 6px; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; gap: 8px; }
+    .task-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+    .task-item:last-child { border-bottom: none; }
+    .task-check { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border2); cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: none; }
+    .task-check.done { background: var(--text); border-color: var(--text); }
+    .task-check.done::after { content: ''; width: 5px; height: 9px; border: 2px solid var(--bg); border-top: none; border-left: none; transform: rotate(45deg) translateY(-1px); display: block; }
+    .task-info { flex: 1; min-width: 0; }
+    .task-title { font-size: 14px; line-height: 1.4; }
+    .task-title.done { text-decoration: line-through; color: var(--text3); }
+    .task-meta { font-size: 12px; color: var(--text2); margin-top: 2px; display: flex; align-items: center; gap: 6px; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+    .badge-new { background: #E1F5EE; color: #0F6E56; }
+    .badge-rev { background: #EEEDFE; color: #3C3489; }
+    .badge-today { background: #FAEEDA; color: #854F0B; }
+    .empty { text-align: center; color: var(--text3); font-size: 14px; padding: 2.5rem 1rem; line-height: 1.8; }
+    .filter-row { display: flex; gap: 6px; margin-bottom: 1rem; flex-wrap: wrap; }
+    .filter-btn { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 0.5px solid var(--border2); background: none; cursor: pointer; color: var(--text2); font-family: inherit; }
+    .filter-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+    .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .cal-nav button { background: none; border: 0.5px solid var(--border2); width: 30px; height: 30px; border-radius: var(--radius-md); cursor: pointer; font-size: 16px; color: var(--text); display: flex; align-items: center; justify-content: center; }
+    .cal-nav button:hover { background: var(--bg2); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+    .cal-head { text-align: center; font-size: 11px; color: var(--text2); padding: 4px 0; }
+    .cal-cell { min-height: 68px; border-radius: var(--radius-md); border: 0.5px solid var(--border); padding: 4px; background: var(--bg); font-size: 11px; }
+    .cal-cell.other-month { background: var(--bg2); opacity: 0.5; }
+    .cal-cell.today { border-color: var(--text); border-width: 1.5px; }
+    .cal-date { font-size: 11px; color: var(--text2); margin-bottom: 2px; }
+    .cal-date.today-num { display: inline-flex; width: 18px; height: 18px; border-radius: 50%; background: var(--text); color: var(--bg); align-items: center; justify-content: center; font-size: 10px; }
+    .cal-dot { font-size: 10px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 1px 3px; border-radius: 3px; margin-bottom: 1px; }
+    .cal-dot.new-task { background: #E1F5EE; color: #0F6E56; }
+    .cal-dot.rev-task { background: #EEEDFE; color: #3C3489; }
+    .legend { display: flex; gap: 12px; margin-top: 10px; font-size: 12px; color: var(--text2); }
+    .legend span { display: flex; align-items: center; gap: 4px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>復習スケジューラー</h1>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('list')">リスト</button>
+      <button class="tab" onclick="switchTab('calendar')">カレンダー</button>
+      <button class="tab" onclick="switchTab('add')">+ 追加</button>
+    </div>
+    <div id="tab-list"></div>
+    <div id="tab-calendar" style="display:none"></div>
+    <div id="tab-add" style="display:none">
+      <div class="card">
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom:0">
+            <label>学習日</label>
+            <input type="date" id="inp-date">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label>科目・カテゴリ</label>
+            <input type="text" id="inp-subject" placeholder="例：英語、数学">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>内容</label>
+          <textarea id="inp-content" placeholder="例：参考書 p.1〜10、単語帳 Unit 3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>復習間隔（日数）</label>
+          <div class="interval-chips" id="intervals-container"></div>
+          <div class="add-interval">
+            <input type="number" id="new-interval" min="1" max="365" placeholder="日数">
+            <button class="btn-ghost" onclick="addInterval()">間隔を追加</button>
+            <button class="btn-ghost" onclick="resetIntervals()">デフォルト</button>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="addTask()">登録する</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'spaced-review-v1';
+    let tasks = [];
+    let calYear = new Date().getFullYear();
+    let calMonth = new Date().getMonth();
+    let filterMode = 'all';
+    const DEFAULT_INTERVALS = [3, 7];
+    let currentIntervals = [...DEFAULT_INTERVALS];
+
+    function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); }
+    function load() {
+      try { const v = localStorage.getItem(STORAGE_KEY); if (v) tasks = JSON.parse(v); } catch(e) {}
+    }
+
+    function fmtISO(d) { return d.toISOString().slice(0, 10); }
+    function addDays(iso, n) { const d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + n); return fmtISO(d); }
+    function today() { return fmtISO(new Date()); }
+
+    function renderIntervals() {
+      const c = document.getElementById('intervals-container');
+      if (!c) return;
+      c.innerHTML = currentIntervals.map((n, i) =>
+        `<span class="interval-chip">${n}日後<button class="remove-chip" onclick="removeInterval(${i})">×</button></span>`
+      ).join('');
+    }
+    function addInterval() {
+      const inp = document.getElementById('new-interval');
+      const v = parseInt(inp.value);
+      if (!v || v < 1) return;
+      if (!currentIntervals.includes(v)) { currentIntervals.push(v); currentIntervals.sort((a,b)=>a-b); }
+      inp.value = '';
+      renderIntervals();
+    }
+    function removeInterval(i) { currentIntervals.splice(i, 1); renderIntervals(); }
+    function resetIntervals() { currentIntervals = [...DEFAULT_INTERVALS]; renderIntervals(); }
+
+    function addTask() {
+      const d = document.getElementById('inp-date').value;
+      const s = document.getElementById('inp-subject').value.trim();
+      const c = document.getElementById('inp-content').value.trim();
+      if (!d || !s || !c) { alert('学習日・科目・内容を入力してください'); return; }
+      const id = Date.now().toString();
+      const reviews = currentIntervals.map(n => ({ date: addDays(d, n), done: false, days: n }));
+      tasks.push({ id, studyDate: d, subject: s, content: c, intervals: [...currentIntervals], reviews, done: false });
+      save();
+      document.getElementById('inp-date').value = '';
+      document.getElementById('inp-subject').value = '';
+      document.getElementById('inp-content').value = '';
+      currentIntervals = [...DEFAULT_INTERVALS];
+      renderIntervals();
+      switchTab('list');
+    }
+
+    function toggleTask(taskId, type, revIdx) {
+      const t = tasks.find(x => x.id === taskId);
+      if (!t) return;
+      if (type === 'main') t.done = !t.done;
+      else t.reviews[revIdx].done = !t.reviews[revIdx].done;
+      save(); render();
+    }
+    function deleteTask(taskId) {
+      if (!confirm('この学習記録と復習タスクをすべて削除しますか？')) return;
+      tasks = tasks.filter(x => x.id !== taskId);
+      save(); render();
+    }
+
+    function getAllDates() {
+      const td = today();
+      const all = {};
+      tasks.forEach(t => {
+        if (!all[t.studyDate]) all[t.studyDate] = [];
+        all[t.studyDate].push({ taskId: t.id, type: 'main', subject: t.subject, content: t.content, done: t.done, date: t.studyDate });
+        t.reviews.forEach((r, i) => {
+          if (!all[r.date]) all[r.date] = [];
+          all[r.date].push({ taskId: t.id, type: 'review', revIdx: i, subject: t.subject, content: t.content, done: r.done, date: r.date, days: r.days });
+        });
+      });
+      return all;
+    }
+
+    function renderList() {
+      const el = document.getElementById('tab-list');
+      const allDates = getAllDates();
+      const sorted = Object.keys(allDates).sort();
+      const td = today();
+      let html = '<div class="filter-row">';
+      html += `<button class="filter-btn ${filterMode==='all'?'active':''}" onclick="setFilter('all')">すべて</button>`;
+      html += `<button class="filter-btn ${filterMode==='upcoming'?'active':''}" onclick="setFilter('upcoming')">今日以降</button>`;
+      html += `<button class="filter-btn ${filterMode==='pending'?'active':''}" onclick="setFilter('pending')">未完了のみ</button>`;
+      html += '</div>';
+      if (sorted.length === 0) { html += '<div class="empty">まだタスクがありません。<br>「+ 追加」から学習内容を登録しましょう。</div>'; el.innerHTML = html; return; }
+      let anyShown = false;
+      sorted.forEach(dateKey => {
+        let items = allDates[dateKey];
+        if (filterMode === 'upcoming') items = items.filter(x => x.date >= td);
+        if (filterMode === 'pending') items = items.filter(x => !x.done);
+        if (items.length === 0) return;
+        anyShown = true;
+        const d = new Date(dateKey + 'T00:00:00');
+        const label = d.toLocaleDateString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short' });
+        const isToday = dateKey === td;
+        html += `<div class="day-section"><div class="day-header">${isToday ? '<span class="badge badge-today">今日</span>' : ''} ${label}</div><div class="card" style="padding:0 1.25rem">`;
+        items.forEach(item => {
+          const badge = item.type === 'main' ? '<span class="badge badge-new">学習</span>' : `<span class="badge badge-rev">復習 ${item.days}日後</span>`;
+          html += `<div class="task-item">
+            <div class="task-check ${item.done?'done':''}" onclick="toggleTask('${item.taskId}','${item.type}',${item.revIdx??'null'})"></div>
+            <div class="task-info">
+              <div class="task-title ${item.done?'done':''}">${item.subject}：${item.content}</div>
+              <div class="task-meta">${badge}</div>
+            </div>
+            ${item.type==='main' ? `<button class="btn-danger" onclick="deleteTask('${item.taskId}')">削除</button>` : ''}
+          </div>`;
+        });
+        html += '</div></div>';
+      });
+      if (!anyShown) html += '<div class="empty">条件に合うタスクがありません。</div>';
+      el.innerHTML = html;
+    }
+
+    function setFilter(m) { filterMode = m; renderList(); }
+
+    function renderCalendar() {
+      const el = document.getElementById('tab-calendar');
+      const td = today();
+      const firstDay = new Date(calYear, calMonth, 1);
+      const lastDay = new Date(calYear, calMonth + 1, 0);
+      const startDow = firstDay.getDay();
+      const daysInMonth = lastDay.getDate();
+      const allDates = getAllDates();
+      const months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+      let html = `<div class="card">
+        <div class="cal-nav">
+          <button onclick="calPrev()">&#8249;</button>
+          <span style="font-size:15px;font-weight:500">${calYear}年 ${months[calMonth]}</span>
+          <button onclick="calNext()">&#8250;</button>
+        </div>
+        <div class="cal-grid">`;
+      ['日','月','火','水','木','金','土'].forEach(d => { html += `<div class="cal-head">${d}</div>`; });
+      for (let i = 0; i < startDow; i++) {
+        const pd = new Date(calYear, calMonth, 1 - startDow + i);
+        html += `<div class="cal-cell other-month"><div class="cal-date">${pd.getDate()}</div></div>`;
+      }
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateKey = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const isToday = dateKey === td;
+        const items = allDates[dateKey] || [];
+        html += `<div class="cal-cell ${isToday?'today':''}">`;
+        html += `<div class="cal-date">${isToday ? `<span class="cal-date today-num">${d}</span>` : d}</div>`;
+        items.slice(0, 3).forEach(item => {
+          html += `<div class="cal-dot ${item.type==='main'?'new-task':'rev-task'}">${item.type==='main'?'●':'↻'} ${item.subject}</div>`;
+        });
+        if (items.length > 3) html += `<div style="font-size:10px;color:var(--text3)">+${items.length-3}件</div>`;
+        html += '</div>';
+      }
+      const rem = (7 - (startDow + daysInMonth) % 7) % 7;
+      for (let i = 1; i <= rem; i++) {
+        html += `<div class="cal-cell other-month"><div class="cal-date">${i}</div></div>`;
+      }
+      html += '</div>';
+      html += `<div class="legend">
+        <span><span style="background:#E1F5EE;color:#0F6E56;padding:1px 6px;border-radius:4px;font-size:11px">● 学習</span></span>
+        <span><span style="background:#EEEDFE;color:#3C3489;padding:1px 6px;border-radius:4px;font-size:11px">↻ 復習</span></span>
+      </div></div>`;
+      el.innerHTML = html;
+    }
+
+    function calPrev() { if (calMonth === 0) { calMonth = 11; calYear--; } else calMonth--; renderCalendar(); }
+    function calNext() { if (calMonth === 11) { calMonth = 0; calYear++; } else calMonth++; renderCalendar(); }
+
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', ['list','calendar','add'][i] === name);
+      });
+      ['list','calendar','add'].forEach(n => {
+        const el = document.getElementById('tab-' + n);
+        if (el) el.style.display = n === name ? 'block' : 'none';
+      });
+      if (name === 'list') renderList();
+      if (name === 'calendar') renderCalendar();
+      if (name === 'add') {
+        renderIntervals();
+        const d = document.getElementById('inp-date');
+        if (d && !d.value) d.value = today();
+      }
+    }
+
+    function render() {
+      const active = document.querySelector('.tab.active');
+      if (!active) return;
+      const idx = [...document.querySelectorAll('.tab')].indexOf(active);
+      if (idx === 0) renderList();
+      if (idx === 1) renderCalendar();
+    }
+
+    load();
+    switchTab('list');
+  </script>
+</body>
+</html>
