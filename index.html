@@ -7,63 +7,39 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #ffffff;
-      --bg2: #f5f5f3;
-      --bg3: #eeece7;
-      --text: #1a1a1a;
-      --text2: #666660;
-      --text3: #999990;
-      --border: rgba(0,0,0,0.12);
-      --border2: rgba(0,0,0,0.22);
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --bg: #ffffff; --bg2: #f5f5f3; --bg3: #eeece7;
+      --text: #1a1a1a; --text2: #666660; --text3: #999990;
+      --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
+      --radius-md: 8px; --radius-lg: 12px;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #1a1a1a;
-        --bg2: #242424;
-        --bg3: #2e2e2e;
-        --text: #f0f0ee;
-        --text2: #aaaaaa;
-        --text3: #666666;
-        --border: rgba(255,255,255,0.12);
-        --border2: rgba(255,255,255,0.22);
+        --bg: #1a1a1a; --bg2: #242424; --bg3: #2e2e2e;
+        --text: #f0f0ee; --text2: #aaaaaa; --text3: #666666;
+        --border: rgba(255,255,255,0.12); --border2: rgba(255,255,255,0.22);
       }
     }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
-      background: var(--bg3);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 1rem;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Noto Sans JP', sans-serif; background: var(--bg3); color: var(--text); min-height: 100vh; padding: 1rem; }
     .container { max-width: 640px; margin: 0 auto; }
     h1 { font-size: 20px; font-weight: 500; margin-bottom: 1.25rem; }
     .tabs { display: flex; gap: 4px; margin-bottom: 1.25rem; background: var(--bg2); padding: 4px; border-radius: var(--radius-lg); }
-    .tab { flex: 1; padding: 8px; font-size: 14px; cursor: pointer; border: none; background: none; color: var(--text2); border-radius: var(--radius-md); font-family: inherit; transition: background 0.15s; }
+    .tab { flex: 1; padding: 8px; font-size: 14px; cursor: pointer; border: none; background: none; color: var(--text2); border-radius: var(--radius-md); font-family: inherit; }
     .tab.active { background: var(--bg); color: var(--text); font-weight: 500; }
     .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
     .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
     label { font-size: 13px; color: var(--text2); }
-    input[type="text"], input[type="date"], input[type="number"], textarea, select {
+    input[type="text"], input[type="date"], input[type="number"], textarea {
       font-size: 14px; font-family: inherit; padding: 8px 10px;
       border: 0.5px solid var(--border2); border-radius: var(--radius-md);
       background: var(--bg); color: var(--text); outline: none;
     }
     input:focus, textarea:focus { box-shadow: 0 0 0 2px rgba(0,0,0,0.15); }
     textarea { min-height: 64px; resize: vertical; }
-    .btn-primary {
-      background: var(--text); color: var(--bg); border: none;
-      padding: 9px 20px; border-radius: var(--radius-md);
-      font-size: 14px; cursor: pointer; font-family: inherit; width: 100%;
-    }
+    .btn-primary { background: var(--text); color: var(--bg); border: none; padding: 9px 20px; border-radius: var(--radius-md); font-size: 14px; cursor: pointer; font-family: inherit; width: 100%; }
     .btn-primary:hover { opacity: 0.85; }
-    .btn-ghost {
-      background: none; border: 0.5px solid var(--border2);
-      padding: 6px 12px; border-radius: var(--radius-md);
-      font-size: 13px; cursor: pointer; color: var(--text); font-family: inherit;
-    }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-ghost { background: none; border: 0.5px solid var(--border2); padding: 6px 12px; border-radius: var(--radius-md); font-size: 13px; cursor: pointer; color: var(--text); font-family: inherit; }
     .btn-ghost:hover { background: var(--bg2); }
     .btn-danger { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 13px; padding: 4px 8px; border-radius: var(--radius-md); font-family: inherit; }
     .btn-danger:hover { color: #E24B4A; background: #FCEBEB; }
@@ -82,7 +58,7 @@
     .task-info { flex: 1; min-width: 0; }
     .task-title { font-size: 14px; line-height: 1.4; }
     .task-title.done { text-decoration: line-through; color: var(--text3); }
-    .task-meta { font-size: 12px; color: var(--text2); margin-top: 2px; display: flex; align-items: center; gap: 6px; }
+    .task-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
     .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
     .badge-new { background: #E1F5EE; color: #0F6E56; }
     .badge-rev { background: #EEEDFE; color: #3C3489; }
@@ -96,16 +72,23 @@
     .cal-nav button:hover { background: var(--bg2); }
     .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
     .cal-head { text-align: center; font-size: 11px; color: var(--text2); padding: 4px 0; }
-    .cal-cell { min-height: 68px; border-radius: var(--radius-md); border: 0.5px solid var(--border); padding: 4px; background: var(--bg); font-size: 11px; }
+    .cal-cell { min-height: 68px; border-radius: var(--radius-md); border: 0.5px solid var(--border); padding: 4px; background: var(--bg); }
     .cal-cell.other-month { background: var(--bg2); opacity: 0.5; }
     .cal-cell.today { border-color: var(--text); border-width: 1.5px; }
     .cal-date { font-size: 11px; color: var(--text2); margin-bottom: 2px; }
-    .cal-date.today-num { display: inline-flex; width: 18px; height: 18px; border-radius: 50%; background: var(--text); color: var(--bg); align-items: center; justify-content: center; font-size: 10px; }
+    .cal-date-today { display: inline-flex; width: 18px; height: 18px; border-radius: 50%; background: var(--text); color: var(--bg); align-items: center; justify-content: center; font-size: 10px; }
     .cal-dot { font-size: 10px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 1px 3px; border-radius: 3px; margin-bottom: 1px; }
     .cal-dot.new-task { background: #E1F5EE; color: #0F6E56; }
     .cal-dot.rev-task { background: #EEEDFE; color: #3C3489; }
     .legend { display: flex; gap: 12px; margin-top: 10px; font-size: 12px; color: var(--text2); }
-    .legend span { display: flex; align-items: center; gap: 4px; }
+    .sync-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; font-size: 12px; color: var(--text2); }
+    .sync-status { display: flex; align-items: center; gap: 6px; }
+    .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text3); }
+    .sync-dot.ok { background: #1D9E75; }
+    .sync-dot.syncing { background: #EF9F27; }
+    .sync-dot.error { background: #E24B4A; }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: var(--radius-lg); font-size: 13px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; }
+    .toast.show { opacity: 1; }
   </style>
 </head>
 <body>
@@ -143,23 +126,68 @@
             <button class="btn-ghost" onclick="resetIntervals()">デフォルト</button>
           </div>
         </div>
-        <button class="btn-primary" onclick="addTask()">登録する</button>
+        <button class="btn-primary" id="btn-add" onclick="addTask()">登録する</button>
       </div>
     </div>
   </div>
+  <div class="toast" id="toast"></div>
 
   <script>
-    const STORAGE_KEY = 'spaced-review-v1';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbw-xPV3obzN9F9ft8MrMmO9QeYqvOs64WB7xjDKFfalINGda9YaGALhzH_FjxPKEmpDTQ/exec';
+    const CACHE_KEY = 'spaced-review-cache-v1';
     let tasks = [];
     let calYear = new Date().getFullYear();
     let calMonth = new Date().getMonth();
     let filterMode = 'all';
     const DEFAULT_INTERVALS = [3, 7];
     let currentIntervals = [...DEFAULT_INTERVALS];
+    let syncState = 'ok';
 
-    function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); }
-    function load() {
-      try { const v = localStorage.getItem(STORAGE_KEY); if (v) tasks = JSON.parse(v); } catch(e) {}
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    function setSyncState(s) {
+      syncState = s;
+      const dot = document.getElementById('sync-dot');
+      const label = document.getElementById('sync-label');
+      if (!dot) return;
+      dot.className = 'sync-dot ' + s;
+      label.textContent = s === 'ok' ? '同期済み' : s === 'syncing' ? '同期中...' : '同期エラー';
+    }
+
+    async function loadFromGAS() {
+      setSyncState('syncing');
+      try {
+        const res = await fetch(GAS_URL);
+        const data = await res.json();
+        tasks = Array.isArray(data) ? data : [];
+        localStorage.setItem(CACHE_KEY, JSON.stringify(tasks));
+        setSyncState('ok');
+      } catch(e) {
+        const cache = localStorage.getItem(CACHE_KEY);
+        if (cache) tasks = JSON.parse(cache);
+        setSyncState('error');
+        showToast('オフラインのためキャッシュを表示しています');
+      }
+      render();
+    }
+
+    async function saveToGAS() {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(tasks));
+      setSyncState('syncing');
+      try {
+        await fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'save', tasks }),
+        });
+        setSyncState('ok');
+      } catch(e) {
+        setSyncState('error');
+        showToast('同期に失敗しました。次回起動時に反映されます。');
+      }
     }
 
     function fmtISO(d) { return d.toISOString().slice(0, 10); }
@@ -178,44 +206,49 @@
       const v = parseInt(inp.value);
       if (!v || v < 1) return;
       if (!currentIntervals.includes(v)) { currentIntervals.push(v); currentIntervals.sort((a,b)=>a-b); }
-      inp.value = '';
-      renderIntervals();
+      inp.value = ''; renderIntervals();
     }
     function removeInterval(i) { currentIntervals.splice(i, 1); renderIntervals(); }
     function resetIntervals() { currentIntervals = [...DEFAULT_INTERVALS]; renderIntervals(); }
 
-    function addTask() {
+    async function addTask() {
       const d = document.getElementById('inp-date').value;
       const s = document.getElementById('inp-subject').value.trim();
       const c = document.getElementById('inp-content').value.trim();
       if (!d || !s || !c) { alert('学習日・科目・内容を入力してください'); return; }
+      const btn = document.getElementById('btn-add');
+      btn.disabled = true; btn.textContent = '登録中...';
       const id = Date.now().toString();
       const reviews = currentIntervals.map(n => ({ date: addDays(d, n), done: false, days: n }));
       tasks.push({ id, studyDate: d, subject: s, content: c, intervals: [...currentIntervals], reviews, done: false });
-      save();
+      await saveToGAS();
       document.getElementById('inp-date').value = '';
       document.getElementById('inp-subject').value = '';
       document.getElementById('inp-content').value = '';
-      currentIntervals = [...DEFAULT_INTERVALS];
-      renderIntervals();
+      currentIntervals = [...DEFAULT_INTERVALS]; renderIntervals();
+      btn.disabled = false; btn.textContent = '登録する';
+      showToast('登録しました');
       switchTab('list');
     }
 
-    function toggleTask(taskId, type, revIdx) {
+    async function toggleTask(taskId, type, revIdx) {
       const t = tasks.find(x => x.id === taskId);
       if (!t) return;
       if (type === 'main') t.done = !t.done;
       else t.reviews[revIdx].done = !t.reviews[revIdx].done;
-      save(); render();
+      render();
+      await saveToGAS();
     }
-    function deleteTask(taskId) {
+
+    async function deleteTask(taskId) {
       if (!confirm('この学習記録と復習タスクをすべて削除しますか？')) return;
       tasks = tasks.filter(x => x.id !== taskId);
-      save(); render();
+      render();
+      await saveToGAS();
+      showToast('削除しました');
     }
 
     function getAllDates() {
-      const td = today();
       const all = {};
       tasks.forEach(t => {
         if (!all[t.studyDate]) all[t.studyDate] = [];
@@ -228,17 +261,25 @@
       return all;
     }
 
+    function syncBar() {
+      return `<div class="sync-bar">
+        <div class="sync-status"><div class="sync-dot ok" id="sync-dot"></div><span id="sync-label">同期済み</span></div>
+        <button class="btn-ghost" onclick="loadFromGAS()" style="font-size:12px;padding:4px 10px">更新</button>
+      </div>`;
+    }
+
     function renderList() {
       const el = document.getElementById('tab-list');
       const allDates = getAllDates();
       const sorted = Object.keys(allDates).sort();
       const td = today();
-      let html = '<div class="filter-row">';
+      let html = syncBar();
+      html += '<div class="filter-row">';
       html += `<button class="filter-btn ${filterMode==='all'?'active':''}" onclick="setFilter('all')">すべて</button>`;
       html += `<button class="filter-btn ${filterMode==='upcoming'?'active':''}" onclick="setFilter('upcoming')">今日以降</button>`;
       html += `<button class="filter-btn ${filterMode==='pending'?'active':''}" onclick="setFilter('pending')">未完了のみ</button>`;
       html += '</div>';
-      if (sorted.length === 0) { html += '<div class="empty">まだタスクがありません。<br>「+ 追加」から学習内容を登録しましょう。</div>'; el.innerHTML = html; return; }
+      if (sorted.length === 0) { html += '<div class="empty">まだタスクがありません。<br>「+ 追加」から学習内容を登録しましょう。</div>'; el.innerHTML = html; setSyncState(syncState); return; }
       let anyShown = false;
       sorted.forEach(dateKey => {
         let items = allDates[dateKey];
@@ -265,6 +306,7 @@
       });
       if (!anyShown) html += '<div class="empty">条件に合うタスクがありません。</div>';
       el.innerHTML = html;
+      setSyncState(syncState);
     }
 
     function setFilter(m) { filterMode = m; renderList(); }
@@ -278,7 +320,7 @@
       const daysInMonth = lastDay.getDate();
       const allDates = getAllDates();
       const months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-      let html = `<div class="card">
+      let html = `<div class="card">${syncBar()}
         <div class="cal-nav">
           <button onclick="calPrev()">&#8249;</button>
           <span style="font-size:15px;font-weight:500">${calYear}年 ${months[calMonth]}</span>
@@ -295,7 +337,7 @@
         const isToday = dateKey === td;
         const items = allDates[dateKey] || [];
         html += `<div class="cal-cell ${isToday?'today':''}">`;
-        html += `<div class="cal-date">${isToday ? `<span class="cal-date today-num">${d}</span>` : d}</div>`;
+        html += `<div class="cal-date">${isToday ? `<span class="cal-date-today">${d}</span>` : d}</div>`;
         items.slice(0, 3).forEach(item => {
           html += `<div class="cal-dot ${item.type==='main'?'new-task':'rev-task'}">${item.type==='main'?'●':'↻'} ${item.subject}</div>`;
         });
@@ -306,12 +348,12 @@
       for (let i = 1; i <= rem; i++) {
         html += `<div class="cal-cell other-month"><div class="cal-date">${i}</div></div>`;
       }
-      html += '</div>';
-      html += `<div class="legend">
+      html += `</div><div class="legend">
         <span><span style="background:#E1F5EE;color:#0F6E56;padding:1px 6px;border-radius:4px;font-size:11px">● 学習</span></span>
         <span><span style="background:#EEEDFE;color:#3C3489;padding:1px 6px;border-radius:4px;font-size:11px">↻ 復習</span></span>
       </div></div>`;
       el.innerHTML = html;
+      setSyncState(syncState);
     }
 
     function calPrev() { if (calMonth === 0) { calMonth = 11; calYear--; } else calMonth--; renderCalendar(); }
@@ -342,8 +384,8 @@
       if (idx === 1) renderCalendar();
     }
 
-    load();
     switchTab('list');
+    loadFromGAS();
   </script>
 </body>
 </html>
